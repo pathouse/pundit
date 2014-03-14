@@ -4,24 +4,24 @@ module Pundit
       extend ::RSpec::Matchers::DSL
 
       matcher :permit do |user, record|
-        match_for_should do |policy|
+        match do |policy|
           permissions.all? { |permission| policy.new(user, record).public_send(permission) }
         end
 
-        match_for_should_not do |policy|
+        match_when_negated do |policy|
           permissions.none? { |permission| policy.new(user, record).public_send(permission) }
         end
 
-        failure_message_for_should do |policy|
+        failure_message do |policy|
           "Expected #{policy} to grant #{permissions.to_sentence} on #{record} but it didn't"
         end
 
-        failure_message_for_should_not do |policy|
+        failure_message_when_negated do |policy|
           "Expected #{policy} not to grant #{permissions.to_sentence} on #{record} but it did"
         end
 
         def permissions
-          example.metadata[:permissions]
+          ::RSpec.current_example.metadata[:permissions]
         end
       end
     end
